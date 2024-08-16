@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { notificationSchema } = require("./notificationSchema");
 const { autoIncrement } = require("mongoose-plugin-autoinc");
 
-//Define User Schema
+// Define User Schema
 const userSchema = new mongoose.Schema(
   {
     user_name: {
@@ -10,13 +10,14 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please Type A User Name!"],
       validate: {
         validator: function (v) {
+          // Validation regex for user_name
           let regex = new RegExp(
             "^(?=[a-zA-Z0-9._ ]{10,35}$)(?!.*[_.]{2})[^_.].*[^_.]$"
-            /*   no >>> _ or . at the beginning
-            no >>>__ or _. or ._ or .. inside 
-            no >>> _ or . at the end
+            /* No _ or . at the beginning
+            No __ or _. or ._ or .. inside 
+            No _ or . at the end
             [a-zA-Z0-9._] >> allowed characters
-            username is {10-} characters long
+            Username is {10-35} characters long
             */
           );
           return regex.test(v);
@@ -30,7 +31,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: {
         validator: function (v) {
-          let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+          // Validation regex for email
+          let regex = new RegExp(
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+            /* Match email with valid format */
+          );
           return regex.test(v);
         },
         message: "Please Enter A Valid Email!",
@@ -41,31 +46,19 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please Type A Password!"],
     },
     phone: {
-      type: Number,
-      required: [true, "Please Type AN EGY Phone Number!"],
-      unique: true,
-      validate: {
-        validator: function (v) {
-          let regex = new RegExp("^(1)[0-2,5]{1}[0-9]{8}");
-          return regex.test(v) && v.toString().length === 10;
-        },
-        message: "Please Enter A Valid EGY Phone Number!",
-      },
-    },
-    full_addresse: {
       type: String,
-      required: [true, "Please Type An Addresse!"],
+      required: [true, "Please Type A Phone Number!"],
+      unique: true,
+      // Removed validation for phone number
+    },
+    full_address: {
+      type: String,
+      required: [true, "Please Type An Address!"],
     },
     zip_code: {
-      type: Number,
+      type: String,
       required: [true, "Please Type A Zip/Postal Code!"],
-      validate: {
-        validator: function (v) {
-          let regex = new RegExp("^[0-9]{5}$");
-          return regex.test(v);
-        },
-        message: "Please Enter A Valid Zip/Postal Code",
-      },
+      // Removed validation for zip/postal code
     },
     role: {
       type: String,
@@ -74,7 +67,7 @@ const userSchema = new mongoose.Schema(
     },
     user_status: {
       type: Number,
-      default: 0, //active , 1 >> unactive, 2 >>suspended
+      default: 0, //active, 1 >> inactive, 2 >> suspended
     },
     no_of_account: {
       type: Number,
@@ -93,34 +86,34 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-//handle duplicate 'Key' error when 'SAVING' a User
+// Handle duplicate 'Key' error when 'SAVING' a User
 userSchema.post("save", function (error, doc, next) {
   if (error.name === "MongoServerError" && error.code === 11000) {
     let dupKeys = Object.keys(error.keyPattern);
-    next(new Error(`This ${dupKeys} is Already Used By Another User!`));
+    next(new Error(`This ${dupKeys.join(", ")} is Already Used By Another User!`));
   } else {
     next();
   }
 });
 
-//handle duplicate 'Key' error when 'UPDATING' a User
+// Handle duplicate 'Key' error when 'UPDATING' a User
 userSchema.post("updateOne", function (error, doc, next) {
   if (error.name === "MongoServerError" && error.code === 11000) {
     let dupKeys = Object.keys(error.keyPattern);
-    next(new Error(`This ${dupKeys} is Already Used By Another User!`));
+    next(new Error(`This ${dupKeys.join(", ")} is Already Used By Another User!`));
   } else {
     next();
   }
 });
 
-//Auto Increament Users ID Plugin
+// Auto Increment Users ID Plugin
 userSchema.plugin(autoIncrement, {
   model: "User",
   startAt: 2525500300,
   incrementBy: 1,
 });
 
-//Define User Model
+// Define User Model
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
