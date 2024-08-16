@@ -2,7 +2,7 @@
 
 // Devlopement CORS Configurations//
 
-const devWhitelist = ["http://localhost:3000"];
+/*const devWhitelist = ["http://localhost:3000"];
 
 const corsDevOptions = {
   origin: function (origin, callback) {
@@ -33,6 +33,28 @@ const corsProOptions = {
     }
   },
 
+  credentials: true,
+};
+
+module.exports = {
+  corsDevOptions,
+  corsProOptions,
+};
+*/
+
+/* CORS domains configuration */
+
+// Développement CORS Configurations
+
+const corsDevOptions = {
+  origin: '*', // Accepte toutes les origines
+  credentials: true,
+};
+
+// Production CORS Configurations
+
+const corsProOptions = {
+  origin: '*', // Accepte toutes les origines
   credentials: true,
 };
 
