@@ -100,7 +100,6 @@ const createUser = async (req, res) => {
     res.status(500).send({
       message: "Something went wrong on the server",
       error: error.message, // You can send the message to the client
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined, // Send stack trace only in development
     });
   }
 };
