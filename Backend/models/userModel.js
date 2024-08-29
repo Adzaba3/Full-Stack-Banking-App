@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     },
     full_address: {
       type: String,
-      required: [true, "Please Type An Address!"],
+      //required: [true, "Please Type An Address!"],
     },
     zip_code: {
       type: String,
