@@ -45,6 +45,32 @@ const getOneUser = async (req, res) => {
 //@desc   >>>> Create one User
 //@route  >>>> POST /api/users/:id
 //@Access >>>> public
+/*const createUser = async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({
+      user_name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword,
+      phone: req.body.phone,
+      full_addresse: req.body.addresse,
+      zip_code: req.body.postal,
+    });
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token: generateUsersToken(user.id, user.email),
+    });
+  } catch (error) {
+    if (error.message.match(/(email|password|name|postal|phone|addresee)/gi)) {
+      return res.status(400).send(error.message);
+    }
+    res.status(500).send("something went wrong");
+  }
+};*/
+
+
 const createUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -66,9 +92,26 @@ const createUser = async (req, res) => {
     if (error.message.match(/(email|password|name|postal|phone|addresee)/gi)) {
       return res.status(400).send(error.message);
     }
-    res.status(500).send("Ooops!! Something Went Wrong, Try again...");
+
+    // Log the full error details to the console for debugging
+    console.error("Error details:", error);
+
+    // Return a more detailed error message in the response (optional)
+    res.status(500).send({
+      message: "Something went wrong on the server",
+      error: error.message, // You can send the message to the client
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined, // Send stack trace only in development
+    });
   }
 };
+
+
+
+
+
+
+
+
 
 //@desc   >>>> user login
 //@route  >>>> GET /api/users/login
